@@ -40,7 +40,14 @@ def transcribe_audio(path):
         temp_files.append(temp_path)
 
     def transcribe_chunk(chunk_path):
-        model = WhisperModel("faster-whisper-base", device="cpu", compute_type="int8", local_files_only=True)
+        # Prefer local model folder if present, else use Hugging Face repo
+        if os.path.isdir("faster-whisper-base"):
+            model_name = "faster-whisper-base"
+            local_files_only = True
+        else:
+            model_name = "Systran/faster-whisper-base"
+            local_files_only = False
+        model = WhisperModel(model_name, device="cpu", compute_type="int8", local_files_only=local_files_only)
         segments, info = model.transcribe(chunk_path)
         text = " ".join([segment.text for segment in segments])
         return text

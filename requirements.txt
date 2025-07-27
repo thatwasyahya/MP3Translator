@@ -1,4 +1,5 @@
 faster-whisper
+huggingface_hub
 argostranslate
 TTS
 pydub
