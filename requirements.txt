@@ -1,0 +1,6 @@
+faster-whisper
+argostranslate
+TTS
+pydub
+ffmpeg-python
+tk
