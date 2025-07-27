@@ -1,0 +1,7 @@
+# Ignore local model files and other large or generated files
+faster-whisper-base/
+*.argosmodel
+*.wav
+*.mp3
+__pycache__/
+.env
