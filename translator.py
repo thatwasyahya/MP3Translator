@@ -1,9 +1,9 @@
 import os
+import requests
 from faster_whisper import WhisperModel
 import threading
 import urllib.request
-import tkinter as tk
-from tkinter import filedialog, messagebox
+import gradio as gr
 from TTS.api import TTS
 from pydub import AudioSegment
 import argostranslate.package
@@ -40,17 +40,27 @@ def transcribe_audio(path):
         temp_files.append(temp_path)
 
     def transcribe_chunk(chunk_path):
-        # Prefer local model folder if present, else use Hugging Face repo
+        # Préférer le modèle local si présent, sinon Hugging Face
         if os.path.isdir("faster-whisper-base"):
             model_name = "faster-whisper-base"
             local_files_only = True
         else:
             model_name = "Systran/faster-whisper-base"
             local_files_only = False
-        model = WhisperModel(model_name, device="cpu", compute_type="int8", local_files_only=local_files_only)
+        # Utiliser GPU si disponible, sinon CPU
+        device = "cuda" if os.environ.get("CUDA_VISIBLE_DEVICES", None) or _gpu_available() else "cpu"
+        compute_type = "float16" if device == "cuda" else "int8"
+        model = WhisperModel(model_name, device=device, compute_type=compute_type, local_files_only=local_files_only)
         segments, info = model.transcribe(chunk_path)
         text = " ".join([segment.text for segment in segments])
         return text
+
+    def _gpu_available():
+        try:
+            import torch
+            return torch.cuda.is_available()
+        except ImportError:
+            return False
 
     results = [None] * num_chunks
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -81,7 +91,14 @@ def translate_text(text):
 
 # 🗣️ Synthèse vocale (français)
 def synthesize_speech(text, output_path):
-    tts = TTS(model_name="tts_models/fr/css10/vits", progress_bar=False, gpu=False)
+    # Utiliser GPU si disponible, sinon CPU
+    use_gpu = False
+    try:
+        import torch
+        use_gpu = torch.cuda.is_available()
+    except ImportError:
+        pass
+    tts = TTS(model_name="tts_models/fr/mai/tacotron2-DDC", progress_bar=False, gpu=use_gpu)
     tts.tts_to_file(text=text, file_path=output_path)
 
 # 🔁 Pipeline complet
@@ -90,71 +107,86 @@ def process_pipeline(input_path, output_dir, log_callback):
         log_callback("⏳ Installation de la traduction...")
         install_argos_translation()
 
-        log_callback("🎙️ Transcription en cours...")
-        transcription = transcribe_audio(input_path)
-        log_callback("📝 Transcription :\n" + transcription[:200] + "...")
+        # Itérer automatiquement sur chunk_1.mp3 à chunk_10.mp3
+        api_base = input_path.rstrip('/')
+        mp3_files = [f"chunk_{i}.mp3" for i in range(1, 11)]
+        for mp3_file in mp3_files:
+            log_callback(f"\n=== Téléchargement de {mp3_file} ===")
+            url = f"{api_base}/get-chunk/{mp3_file}"
+            r = requests.get(url)
+            if r.status_code != 200:
+                log_callback(f"Erreur téléchargement {mp3_file}: {r.status_code}")
+                continue
+            with open(mp3_file, "wb") as f:
+                f.write(r.content)
+            log_callback(f"Fichier {mp3_file} téléchargé.")
 
-        log_callback("🌍 Traduction en cours...")
-        translation = translate_text(transcription)
-        log_callback("📝 Traduction :\n" + translation[:200] + "...")
+            log_callback("🎙️ Transcription en cours...")
+            transcription = transcribe_audio(mp3_file)
+            log_callback("📝 Transcription :\n" + transcription[:200] + "...")
 
-        output_path = os.path.join(output_dir, "output_fr.mp3")
-        log_callback("🔊 Synthèse vocale...")
-        synthesize_speech(translation, output_path)
+            log_callback("🌍 Traduction en cours...")
+            translation = translate_text(transcription)
+            log_callback("📝 Traduction :\n" + translation[:200] + "...")
 
-        log_callback(f"✅ Terminé ! Fichier généré : {output_path}")
-        messagebox.showinfo("Succès", f"Fichier généré : {output_path}")
+            output_path = f"{os.path.splitext(mp3_file)[0]}_fr.mp3"
+            log_callback("🔊 Synthèse vocale...")
+            synthesize_speech(translation, output_path)
+            log_callback(f"✅ Terminé ! Fichier généré : {output_path}")
+
+            # Uploader le fichier généré via l'API POST
+            log_callback(f"⬆️ Upload de {output_path} vers l'API...")
+            with open(output_path, "rb") as f:
+                files = {'file': (output_path, f, 'audio/mpeg')}
+                resp = requests.post(f"{api_base}/upload", files=files)
+            if resp.status_code == 200:
+                log_callback(f"Upload réussi pour {output_path}")
+            else:
+                log_callback(f"Erreur upload {output_path}: {resp.status_code}")
+
+            # Supprimer les fichiers locaux immédiatement après traitement
+            try:
+                os.remove(mp3_file)
+            except Exception:
+                pass
+            try:
+                os.remove(output_path)
+            except Exception:
+                pass
     except Exception as e:
         log_callback(f"❌ Erreur : {e}")
-        messagebox.showerror("Erreur", str(e))
 
-# 🎛️ Interface graphique (Tkinter)
-def launch_gui():
-    root = tk.Tk()
-    root.title("Traducteur vocal (EN → FR) - Local & Gratuit")
-    root.geometry("600x400")
 
-    input_file = tk.StringVar()
-    output_dir = tk.StringVar()
+# 🎛️ Interface web (Gradio)
+def launch_gradio():
 
-    def browse_input():
-        file = filedialog.askopenfilename(filetypes=[("Fichiers audio", "*.mp3")])
-        if file:
-            input_file.set(file)
+    def gradio_process(input_dir):
+        logs = []
+        def log_callback(msg):
+            logs.append(msg)
+        try:
+            process_pipeline(input_dir, None, log_callback)
+            return "\n".join(logs), []
+        except Exception as e:
+            return f"Erreur : {e}", []
 
-    def browse_output():
-        folder = filedialog.askdirectory()
-        if folder:
-            output_dir.set(folder)
+    with gr.Blocks() as demo:
+        gr.Markdown("# Traducteur vocal (EN → FR) - Local & Gratuit")
+        with gr.Row():
+            input_dir = gr.Textbox(label="URL de base de l'API (ex: https://xxxx.ngrok-free.app)", value="https://1b2d798c8b46.ngrok-free.app")
+        run_btn = gr.Button("Démarrer le processus")
+        log_output = gr.Textbox(label="Logs", lines=10)
+        audio_output = gr.Gallery(label="Audios synthétisés (français)", type="audio", columns=1)
 
-    log_text = tk.Text(root, height=15, wrap=tk.WORD)
-    log_text.pack(pady=10)
+        def on_run(in_dir):
+            if not in_dir:
+                return "Veuillez indiquer l'URL de l'API.", []
+            logs, audio_paths = gradio_process(in_dir)
+            return logs, audio_paths
 
-    def log(msg):
-        log_text.insert(tk.END, msg + "\n")
-        log_text.see(tk.END)
-
-    def run():
-        if not input_file.get() or not output_dir.get():
-            messagebox.showwarning("Champs manquants", "Veuillez sélectionner un fichier et un dossier de sortie.")
-            return
-        threading.Thread(target=process_pipeline, args=(input_file.get(), output_dir.get(), log)).start()
-
-    frame = tk.Frame(root)
-    frame.pack(pady=10)
-
-    tk.Label(frame, text="Fichier audio (.mp3)").grid(row=0, column=0, padx=5)
-    tk.Entry(frame, textvariable=input_file, width=40).grid(row=0, column=1)
-    tk.Button(frame, text="Parcourir", command=browse_input).grid(row=0, column=2)
-
-    tk.Label(frame, text="Dossier de sortie").grid(row=1, column=0, padx=5)
-    tk.Entry(frame, textvariable=output_dir, width=40).grid(row=1, column=1)
-    tk.Button(frame, text="Parcourir", command=browse_output).grid(row=1, column=2)
-
-    tk.Button(root, text="Démarrer le processus", command=run, bg="green", fg="white", height=2).pack(pady=10)
-
-    root.mainloop()
+        run_btn.click(on_run, inputs=[input_dir], outputs=[log_output, audio_output])
+    demo.launch()
 
 # 🚀 Lancement de l'app
 if __name__ == "__main__":
-    launch_gui()
+    launch_gradio()
