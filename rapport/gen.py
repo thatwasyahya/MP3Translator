@@ -166,7 +166,7 @@ PREAMBLE=r"""% =================================================================
             unicode=true, bookmarksnumbered=true, pdfborder={0 0 0}}
 \usepackage{titlesec}
 \titleformat{\chapter}[display]
-  {\normalfont\huge\bfseries\color{titleblue}}
+  {\normalfont\huge\bfseries}
   {\chaptertitlename\ \thechapter}{12pt}{\Huge}
 \titlespacing*{\chapter}{0pt}{6pt}{26pt}
 \renewcommand{\contentsname}{فهرس المحتويات}
@@ -190,30 +190,22 @@ PREAMBLE=r"""% =================================================================
 \sloppy
 """
 
-COVER=r"""% ------------------------------ الغلاف -------------------------------
+COVER=r"""% ------------------------------ الغلاف (كما في الأصل) ---------------
 \thispagestyle{empty}
 \begin{titlepage}
 \centering
-{\large المملكة المغربية}\\[2pt]
-{\large وزارة التعليم العالي والبحث العلمي وابتكار}\\[10pt]
-{\large\bfseries\color{titleblue} جامعة عبد المالك السعدي}\\[2pt]
-{\large كلية الآداب والعلوم الإنسانية بمرتيل}\\[2pt]
-{\large شعبة علم النفس الإكلينيكي}\\[26pt]
-\rule{\linewidth}{0.4pt}\\[8pt]
-{\large بحث لنيل شهادة الإجازة في علم النفس الإكلينيكي}\\[6pt]
-{\large تحت عنوان:}\\[14pt]
-{\LARGE\bfseries\color{titleblue} إدراك أسلوب المعاملة الوالدية المتسلط\\[8pt]
-وعلاقته بتقدير الذات لدى المراهقين (15--17 سنة)}\\[8pt]
-{\Large دراسة كيفية}\\[6pt]
-\rule{\linewidth}{0.4pt}\\[34pt]
-\begin{minipage}{0.46\linewidth}\centering
-{\bfseries إعداد الطالبة:}\\[4pt] لطيفة أديب\\[4pt]
-{\small رقم التسجيل: 23068742}
-\end{minipage}\hfill
-\begin{minipage}{0.46\linewidth}\centering
-{\bfseries تحت إشراف الأستاذ:}\\[4pt] د. بدر الدين الزيدي
-\end{minipage}\\[26pt]
-{\large المستوى: السنة الثالثة من الإجازة -- علم النفس الإكلينيكي}\\[30pt]
+{\large\bfseries شعبة علم النفس الإكلينيكي}\\[10pt]
+{\large جامعة عبد المالك السعدي}\\[3pt]
+{\large كلية الآداب والعلوم الإنسانية بتطوان}\\[36pt]
+{\large بحث لنيل شهادة الإجازة في علم النفس الإكلينيكي}\\[16pt]
+{\large\bfseries بعنوان:}\\[18pt]
+{\LARGE\bfseries إدراك أسلوب المعاملة الوالدية المتسلط\\[10pt]
+وعلاقته بتقدير الذات لدى المراهقين (15--17 سنة)}\\[10pt]
+{\Large دراسة كيفية}\\[46pt]
+{\large إعداد الطالبة: لطيفة أديب}\\[6pt]
+{\large رقم التسجيل: 23068742}\\[16pt]
+{\large تحت إشراف الأستاذ: د. بدر الدين الزيدي}\\[26pt]
+{\large المستوى: السنة الثالثة من الإجازة -- علم النفس الإكلينيكي}\\[36pt]
 {\large السنة الجامعية: 2025 -- 2026}
 \end{titlepage}
 \pagenumbering{roman}
