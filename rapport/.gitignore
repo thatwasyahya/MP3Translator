@@ -1,0 +1,12 @@
+*.aux
+*.log
+*.out
+*.toc
+*.lot
+*.lof
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+pzdr.tfm
+mfput.log
+missfont.log
