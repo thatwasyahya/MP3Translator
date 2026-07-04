@@ -201,32 +201,48 @@ PREAMBLE=r"""% =================================================================
 \sloppy
 """
 
-COVER=r"""% ------------------------------ الغلاف (مطابق للأصل) ---------------
+COVER=r"""% ------------------------------ الغلاف (مطابق للأصل مع الشعار) ------
 \thispagestyle{empty}
 \begin{titlepage}
 \begin{tikzpicture}[remember picture,overlay]
-  \draw[line width=2.2pt,color=borderblue]
-     ([shift={(1.1cm,-1.1cm)}]current page.north west) rectangle
-     ([shift={(-1.1cm,1.1cm)}]current page.south east);
-  \draw[line width=0.6pt,color=borderblue]
-     ([shift={(1.28cm,-1.28cm)}]current page.north west) rectangle
-     ([shift={(-1.28cm,1.28cm)}]current page.south east);
+  \draw[line width=3pt,color=borderblue]
+     ([shift={(1.0cm,-1.0cm)}]current page.north west) rectangle
+     ([shift={(-1.0cm,1.0cm)}]current page.south east);
+  \draw[line width=0.8pt,color=borderblue]
+     ([shift={(1.22cm,-1.22cm)}]current page.north west) rectangle
+     ([shift={(-1.22cm,1.22cm)}]current page.south east);
 \end{tikzpicture}
 \centering
-\vspace*{0.4cm}
-{\LARGE\bfseries\color{coverblue} شعبة علم النفس الإكلينيكي}\\[16pt]
-{\LARGE\bfseries\color{coverblue} جامعة عبد المالك السعدي}\\[6pt]
-{\LARGE\bfseries\color{coverblue} كلية العلوم بتطوان}\\[46pt]
-{\Large بحث لنيل شهادة الإجازة في علم النفس الإكلينيكي}\\[16pt]
-{\Large\bfseries بعنوان:}\\[26pt]
-{\LARGE\bfseries\color{titlecolor} إدراك أسلوب المعاملة الوالدية المتسلط وعلاقته\\[8pt]
-بتقدير الذات لدى المراهقين (15--17 سنة)}\\[10pt]
-{\Large\bfseries\color{titlecolor} دراسة كيفية}\\[50pt]
-{\large\bfseries\color{titlecolor} تحت إشراف الأستاذ: د. بدر الدين الزيدي}\\[30pt]
-{\large\bfseries إعداد الطالبة: لطيفة أديب}\\[6pt]
-{\large رقم التسجيل: 23068742}\\[24pt]
-{\large المستوى: السنة الثالثة من الإجازة -- علم النفس الإكلينيكي}\\[40pt]
-{\large السنة الجامعية: 2025 -- 2026}
+\vspace*{0.5cm}
+% ---- الصفّ العلوي: الجامعة (يمين) - الشعار (وسط) - الشعبة (يسار) ----
+\noindent
+\begin{minipage}[c]{0.34\textwidth}\centering
+{\large\bfseries\color{coverblue} جامعة عبد المالك السعدي\\[4pt] كلية العلوم بتطوان}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.26\textwidth}\centering
+\includegraphics[width=3cm]{assets/logo.png}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.34\textwidth}\centering
+{\large\bfseries\color{coverblue} شعبة\\[4pt] علم النفس الإكلينيكي}
+\end{minipage}\\[40pt]
+{\large\bfseries\underline{بحث لنيل شهادة الإجازة في علم النفس الإكلينيكي}}\\[26pt]
+{\large\bfseries\underline{بعنوان}}\\[24pt]
+% ---- عنوان البحث داخل إطار ----
+{\setlength{\fboxsep}{14pt}\setlength{\fboxrule}{1pt}%
+\fcolorbox{borderblue}{white}{\begin{minipage}{0.80\textwidth}\centering
+{\Large\bfseries\color{titlecolor} إدراك أسلوب المعاملة الوالدية المتسلط وعلاقته
+بتقدير الذات لدى المراهقين (15--17 سنة): دراسة كيفية}
+\end{minipage}}}\\[46pt]
+% ---- إعداد (يمين) - إشراف (يسار) ----
+\noindent
+\begin{minipage}[t]{0.46\textwidth}\centering
+{\large\bfseries إعداد الطالبة}\\[4pt]{\large لطيفة أديب}\\[4pt]{\large رقم التسجيل: 23068742}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\textwidth}\centering
+{\large\bfseries\underline{تحت إشراف الأستاذ}}\\[4pt]{\large\underline{د. بدر الدين الزيدي}}
+\end{minipage}\\[40pt]
+{\large\bfseries المستوى: السنة الثالثة من الإجازة -- علم النفس الإكلينيكي}\\[36pt]
+{\large\bfseries السنة الجامعية: 2025 -- 2026}
 \end{titlepage}
 \pagenumbering{roman}
 """
