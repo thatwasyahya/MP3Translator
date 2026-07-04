@@ -57,6 +57,8 @@ def esc(s):
     s=s.replace('—','--').replace('–','-')
     import re as _r
     s=_r.sub(r'\*\*(.+?)\*\*', r'\\textbf{\1}', s)   # markdown bold -> \textbf
+    # decimal numbers (e.g. 45.5%) reverse under RTL -> force LTR language switch
+    s=_r.sub(r'(\d+\.\d+(?:\\%)?)', r'\\textenglish{\1}', s)
     return s
 
 # ----------------------------------------------------------------------
