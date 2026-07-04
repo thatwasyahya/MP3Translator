@@ -161,9 +161,12 @@ PREAMBLE=r"""% =================================================================
 \usepackage{amssymb}
 \usepackage{float}
 \usepackage{enumitem}
+\usepackage{needspace}
+\usepackage{etoolbox}
+% اقفز إلى صفحة جديدة إذا بدأ عنوان قسم وقد تجاوزنا ثُلثَي الصفحة (بقي أقلّ من الثلث)
+\pretocmd{\section}{\Needspace*{0.34\textheight}}{}{}
 \usepackage{hyperref}
-\hypersetup{colorlinks=true, linkcolor=titleblue, urlcolor=titleblue,
-            unicode=true, bookmarksnumbered=true, pdfborder={0 0 0}}
+\hypersetup{hidelinks, unicode=true, bookmarksnumbered=true}
 \usepackage{titlesec}
 \titleformat{\chapter}[display]
   {\normalfont\huge\bfseries}

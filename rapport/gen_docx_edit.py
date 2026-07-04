@@ -97,6 +97,8 @@ def build_before(ref,kind,text):
         fmt_par(p,'c' if kind=='h1' else 'r',sz,indent=False,ls=1.0,
                 sb=(16 if kind=='h1' else 8),sa=6)
         set_outline(p,lvl); add_runs(p,text,sz,bold_all=True)
+        if kind=='h1': p.paragraph_format.page_break_before=True
+        else: p.paragraph_format.keep_with_next=True
     elif kind=='li':
         fmt_par(p,'j',14,indent=False,sa=3); add_runs(p,'•  '+text,14)
     else:
@@ -193,9 +195,16 @@ for idx,p in enumerate(paras):
         fmt_par(p,'c' if cls=='h1' else 'r',sz,indent=False,ls=1.0,
                 sb=(16 if cls=='h1' else 8),sa=6)
         set_outline(p,lvl)
+        # major point (chapter) -> new page ; sub-headings -> never stranded at page bottom
+        if cls=='h1' and any(txt.startswith(m) for m in
+               ('المقدمة العامة','الفصل','الخاتمة العامة','الملاحق','قائمة المراجع')):
+            p.paragraph_format.page_break_before=True
+        else:
+            p.paragraph_format.keep_with_next=True
         for r in p.runs: style_run(r,sz,bold=True)
     else:
         fmt_par(p,'j',14,indent=(not islist))
+        p.paragraph_format.widow_control=True
         for r in p.runs: style_run(r,14,bold=bool(r.font.bold))
 
 # ---------- make every table fit the page (RTL) ----------
@@ -249,7 +258,7 @@ heading_before(mqddima,'فهرس المحتويات')
 field_para(mqddima,'TOC \\o "1-3" \\h \\z \\u')
 heading_before(mqddima,'لائحة الجداول')
 field_para(mqddima,'TOC \\h \\z \\c "جدول"')
-pagebreak_before(mqddima)
+# (no trailing page break: المقدمة العامة has page_break_before)
 
 # ---------- fix faculty text inside text boxes (raw w:t nodes) ----------
 _repl=[('كلية الآداب والعلوم الإنسانية','كلية العلوم'),
