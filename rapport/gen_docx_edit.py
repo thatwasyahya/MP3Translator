@@ -143,15 +143,10 @@ for p in doc.paragraphs[:_cover_end]:
                           .replace('كلية الآداب والعلوم الإنسانية','كلية العلوم')
                           .replace('بمرتيل','بتطوان').replace('مرتيل','تطوان'))
 
-# ---------- margins + RTL section + footer page numbers ----------
-sec=doc.sections[0]
-sec.top_margin=Cm(2.5); sec.bottom_margin=Cm(2.5); sec.left_margin=Cm(3); sec.right_margin=Cm(3)
-if sec._sectPr.find(qn('w:bidi')) is None: sec._sectPr.append(OxmlElement('w:bidi'))
-fp=sec.footer.paragraphs[0]; fp.alignment=WD_ALIGN_PARAGRAPH.CENTER
-r=fp.add_run(); _set(r._r,'w:fldChar',**{'w:fldCharType':'begin'})
-r2=fp.add_run(); it=OxmlElement('w:instrText'); it.set(qn('xml:space'),'preserve'); it.text=' PAGE '; r2._r.append(it)
-r3=fp.add_run(); _set(r3._r,'w:fldChar',**{'w:fldCharType':'end'})
-for rr in fp.runs: style_run(rr,12)
+# ---------- margins + RTL on every section (page numbering set later) ----------
+for sec in doc.sections:
+    sec.top_margin=Cm(2.5); sec.bottom_margin=Cm(2.5); sec.left_margin=Cm(3); sec.right_margin=Cm(3)
+    if sec._sectPr.find(qn('w:bidi')) is None: sec._sectPr.append(OxmlElement('w:bidi'))
 
 # ---------- normalise body formatting + headings ----------
 SEC_PREF=('أولاً','أولًا','ثانياً','ثانيًا','ثالثاً','ثالثًا','رابعاً','رابعًا','خامساً','خامسًا',
@@ -259,6 +254,61 @@ field_para(mqddima,'TOC \\o "1-3" \\h \\z \\u')
 heading_before(mqddima,'لائحة الجداول')
 field_para(mqddima,'TOC \\h \\z \\c "جدول"')
 # (no trailing page break: المقدمة العامة has page_break_before)
+
+# ---------- page numbering: cover (none) / front matter (أ ب ج) / body (1 2 3) ----------
+import copy
+_ORDER_BEFORE={qn('w:cols'),qn('w:formProt'),qn('w:vAlign'),qn('w:noEndnote'),
+               qn('w:titlePg'),qn('w:textDirection'),qn('w:bidi'),qn('w:rtlGutter'),
+               qn('w:docGrid'),qn('w:printerSettings'),qn('w:sectPrChange')}
+def set_pgnum(sectPr, fmt, start=None):
+    old=sectPr.find(qn('w:pgNumType'))
+    if old is not None: sectPr.remove(old)
+    el=OxmlElement('w:pgNumType'); el.set(qn('w:fmt'),fmt)
+    if start is not None: el.set(qn('w:start'),str(start))
+    for child in sectPr:
+        if child.tag in _ORDER_BEFORE:
+            child.addprevious(el); break
+    else:
+        sectPr.append(el)
+def footer_page_field(sec):
+    sec.footer.is_linked_to_previous=False
+    fp=sec.footer.paragraphs[0]
+    for rr in list(fp.runs): rr._r.getparent().remove(rr._r)
+    rtl_par(fp); fp.paragraph_format.alignment=WD_ALIGN_PARAGRAPH.CENTER
+    r=fp.add_run(); _set(r._r,'w:fldChar',**{'w:fldCharType':'begin'})
+    r2=fp.add_run(); it=OxmlElement('w:instrText'); it.set(qn('xml:space'),'preserve'); it.text=' PAGE '; r2._r.append(it)
+    r3=fp.add_run(); _set(r3._r,'w:fldChar',**{'w:fldCharType':'end'})
+    for rr in fp.runs: style_run(rr,12)
+def footer_empty(sec):
+    sec.footer.is_linked_to_previous=False
+    for rr in list(sec.footer.paragraphs[0].runs): rr._r.getparent().remove(rr._r)
+
+# capture existing sectPr refs BEFORE splitting
+cover_pr=doc.sections[0]._sectPr           # الغلاف
+front_pr=doc.sections[1]._sectPr           # يحكم حاليًا من شكر حتى نهاية القسم الثاني
+# insert a section break just before المقدمة العامة -> front matter becomes its own section
+mi=[i for i,p in enumerate(doc.paragraphs) if p.text.strip().startswith('المقدمة العامة')][0]
+prev=doc.paragraphs[mi-1]
+new_pr=copy.deepcopy(front_pr)
+for fr in new_pr.findall(qn('w:footerReference')): new_pr.remove(fr)  # own footer
+prev._p.get_or_add_pPr().append(new_pr)    # section that ENDS before المقدمة = front matter
+# now assign numbering formats
+set_pgnum(cover_pr,'decimal',1)            # الغلاف (بدون رقم ظاهر)
+set_pgnum(new_pr,'arabicAbjad',1)          # التمهيديات: أ، ب، ج ...
+set_pgnum(front_pr,'decimal',1)            # المتن يبدأ من المقدمة: 1، 2، 3 ...
+# footers
+secs=doc.sections                          # يُعاد حسابها: [غلاف, تمهيديات, متن1, متن2...]
+footer_empty(secs[0])                       # الغلاف بلا رقم
+footer_page_field(secs[1])                  # التمهيديات (أبجدي)
+for s in secs[2:]:
+    s.footer.is_linked_to_previous=True     # المتن يرث حقل PAGE ويعرضه بالأرقام العادية
+# فاصل الصفحة (nextPage) + إزالة page_break_before من المقدمة لتفادي صفحة فارغة
+_t=new_pr.find(qn('w:type'))
+if _t is None:
+    _t=OxmlElement('w:type'); _pg=new_pr.find(qn('w:pgSz'))
+    (_pg.addprevious(_t) if _pg is not None else new_pr.insert(0,_t))
+_t.set(qn('w:val'),'nextPage')
+doc.paragraphs[mi].paragraph_format.page_break_before=False
 
 # ---------- fix faculty text inside text boxes (raw w:t nodes) ----------
 _repl=[('كلية الآداب والعلوم الإنسانية','كلية العلوم'),

@@ -196,6 +196,8 @@ PREAMBLE=r"""% =================================================================
   {\newfontfamily\arabicfont[Script=Arabic]{FreeSerif}}
 \newfontfamily\englishfont{Latin Modern Roman}
 \newcommand{\en}[1]{\textenglish{#1}}
+% ترقيم الصفحات الأولى بالأحرف الأبجدية (أ، ب، ج ...)
+\newcommand*{\abjadnum}[1]{\ifcase#1\or أ\or ب\or ج\or د\or ه\or و\or ز\or ح\or ط\or ي\or يا\or يب\or يج\or يد\or يه\or يو\or يز\or يح\or يط\or ك\else#1\fi}
 % ترقيم الجداول متسلسل 1..N (يطابق الإحالات في المتن)
 \counterwithout{table}{chapter}
 \renewcommand{\thetable}{\arabic{table}}
@@ -246,7 +248,8 @@ COVER=r"""% ------------------------------ الغلاف (مطابق للأصل �
 {\large\bfseries المستوى: السنة الثالثة من الإجازة -- علم النفس الإكلينيكي}\\[36pt]
 {\large\bfseries السنة الجامعية: 2025 -- 2026}
 \end{titlepage}
-\pagenumbering{roman}
+% الصفحات التمهيدية: ترقيم أبجدي (أ، ب، ج)
+\pagenumbering{arabic}\renewcommand{\thepage}{\abjadnum{\value{page}}}
 """
 
 # شكر و ملخص و Résumé (from source, de-duplicated)
