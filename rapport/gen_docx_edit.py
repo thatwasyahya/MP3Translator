@@ -45,8 +45,9 @@ def parse_tex(path):
             buf.append(s)
     flush(); return out
 
-NEW_INTRO=parse_tex('/home/user/MP3Translator/rapport/_intro.tex')
-NEW_CH4  =parse_tex('/home/user/MP3Translator/rapport/_ch4.tex')
+NEW_INTRO =parse_tex('/home/user/MP3Translator/rapport/_intro.tex')
+NEW_CH4   =parse_tex('/home/user/MP3Translator/rapport/_ch4.tex')
+NEW_THEORY=parse_tex('/home/user/MP3Translator/rapport/_theory.tex')
 
 # ---------- low-level docx helpers ----------
 def _set(el,tag,**a):
@@ -232,6 +233,15 @@ mqddima=build_before(ch1_h,'h1','المقدمة العامة')
 for kind,text in NEW_INTRO:
     if kind=='h1': continue          # skip its own duplicate title
     build_before(ch1_h,kind,text)
+
+# ---------- insert the MISSING theoretical framework + Chapter 2 heading ----------
+_frag=find(lambda t:t.startswith('ؤ'))
+if _frag is not None: _frag._p.getparent().remove(_frag._p)
+_meth=find(lambda t:t.strip().startswith('4.') and 'هدف' in t) \
+      or find(lambda t:t.strip().startswith('هدف البحث'))
+if _meth is not None:
+    for kind,text in NEW_THEORY: build_before(_meth,kind,text)   # نهاية الفصل الأول
+    build_before(_meth,'h1','الفصل الثاني: الإطار المنهجي للدراسة')
 
 # ---------- auto فهرس المحتويات + لائحة الجداول before the introduction ----------
 def field_para(ref,instr):

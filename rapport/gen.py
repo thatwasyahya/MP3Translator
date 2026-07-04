@@ -61,6 +61,9 @@ def esc(s):
     s=_r.sub(r'(\d+\.\d+(?:\\%)?)', r'\\textenglish{\1}', s)
     return s
 
+def babify(s):
+    return s   # (معطّلة: نُبقي على تسمية الفصل)
+
 # ----------------------------------------------------------------------
 # 3. Table emitter (adaptive column specs, RTL-safe, width-fitting)
 # ----------------------------------------------------------------------
@@ -333,6 +336,8 @@ with open('/home/user/MP3Translator/rapport/_intro.tex',encoding='utf-8') as f:
     NEW_INTRO=f.read()
 with open('/home/user/MP3Translator/rapport/_ch4.tex',encoding='utf-8') as f:
     NEW_CH4=f.read()
+with open('/home/user/MP3Translator/rapport/_theory.tex',encoding='utf-8') as f:
+    THEORY=f.read()
 
 # ----------------------------------------------------------------------
 # 6. Main conversion loop
@@ -405,6 +410,7 @@ while i<n:
     if (not emitted_ch2) and (t.startswith('4. هدف البحث') or t.startswith('4.هدف')
                               or ('هدف البحث' in t and len(t)<25)):
         close_itemize()
+        out.append(THEORY)   # الإطار النظري الكامل (كان ناقصًا) في نهاية الفصل الأول
         out.append(r'\chapter{الإشكالية وإجراءات الدراسة المنهجية}')
         out.append(r'\section*{تمهيد}')
         out.append(r"""تتناول الدراسة الحالية العلاقة بين إدراك المراهق لأسلوب المعاملة الوالدية
