@@ -48,6 +48,7 @@ def parse_tex(path):
 NEW_INTRO =parse_tex('/home/user/MP3Translator/rapport/_intro.tex')
 NEW_CH4   =parse_tex('/home/user/MP3Translator/rapport/_ch4.tex')
 NEW_THEORY=parse_tex('/home/user/MP3Translator/rapport/_theory.tex')
+NEW_ISHKAL=parse_tex('/home/user/MP3Translator/rapport/_ishkaliya.tex')
 
 # ---------- low-level docx helpers ----------
 def _set(el,tag,**a):
@@ -114,6 +115,11 @@ def find(pred):
     return None
 intro_h=find(lambda t:t.startswith('المقدمة العامة'))
 ch1_h  =find(lambda t:t.startswith('الفصل الاول') or t.startswith('الفصل الأول'))
+# وحِّد عنوان الفصل الأول مع نسخة الـ PDF
+if ch1_h is not None:
+    for r in ch1_h.runs: r.text=''
+    if ch1_h.runs: ch1_h.runs[0].text='الفصل الأول: الإطار النظري للدراسة'
+    else: ch1_h.add_run('الفصل الأول: الإطار النظري للدراسة')
 ch4_h  =find(lambda t:t.startswith('الفصل الرابع'))
 khat_h =find(lambda t:t.startswith('الخاتمة العامة'))
 shukr_h=find(lambda t:t.startswith('شكر وتقدير'))
@@ -228,8 +234,7 @@ for t in doc.tables:
 #            already-styled paragraphs are not clobbered) ----------
 delete_between(ch4_h,khat_h)
 for idx,(kind,text) in enumerate(NEW_CH4):
-    if idx==0 and kind=='h1': text='الفصل الرابع: '+text
-    build_before(khat_h,kind,text)
+    build_before(khat_h,kind,text)   # العنوان «الفصل الرابع: مناقشة النتائج» مضمَّن أصلاً في _ch4.tex
 delete_between(intro_h,ch1_h)
 mqddima=build_before(ch1_h,'h1','المقدمة العامة')
 for kind,text in NEW_INTRO:
@@ -243,7 +248,8 @@ _meth=find(lambda t:t.strip().startswith('4.') and 'هدف' in t) \
       or find(lambda t:t.strip().startswith('هدف البحث'))
 if _meth is not None:
     for kind,text in NEW_THEORY: build_before(_meth,kind,text)   # نهاية الفصل الأول
-    build_before(_meth,'h1','الفصل الثاني: الإطار المنهجي للدراسة')
+    build_before(_meth,'h1','الفصل الثاني: الإشكالية وإجراءات الدراسة المنهجية')
+    for kind,text in NEW_ISHKAL: build_before(_meth,kind,text)   # طرح الإشكالية + أهمية البحث (كان ناقصًا)
 
 # ---------- auto فهرس المحتويات + لائحة الجداول before the introduction ----------
 def field_para(ref,instr):

@@ -179,7 +179,7 @@ PREAMBLE=r"""% =================================================================
 \usepackage{titlesec}
 \titleformat{\chapter}[display]
   {\normalfont\huge\bfseries}
-  {\chaptertitlename\ \thechapter}{12pt}{\Huge}
+  {الفصل\ \thechapter}{12pt}{\Huge}
 \titlespacing*{\chapter}{0pt}{6pt}{26pt}
 \renewcommand{\contentsname}{فهرس المحتويات}
 \renewcommand{\listtablename}{لائحة الجداول}
@@ -338,6 +338,8 @@ with open('/home/user/MP3Translator/rapport/_ch4.tex',encoding='utf-8') as f:
     NEW_CH4=f.read()
 with open('/home/user/MP3Translator/rapport/_theory.tex',encoding='utf-8') as f:
     THEORY=f.read()
+with open('/home/user/MP3Translator/rapport/_ishkaliya.tex',encoding='utf-8') as f:
+    ISHKAL=f.read()
 
 # ----------------------------------------------------------------------
 # 6. Main conversion loop
@@ -388,7 +390,8 @@ while i<n:
             mode='normal'
             close_itemize()
             out.append(NEW_INTRO)
-            out.append(r'\chapter{الإطار النظري للدراسة}')
+            out.append(r'\chapter*{الفصل الأول: الإطار النظري للدراسة}')
+            out.append(r'\addcontentsline{toc}{chapter}{الفصل الأول: الإطار النظري للدراسة}')
             i+=1; continue
         i+=1; continue
 
@@ -411,13 +414,15 @@ while i<n:
                               or ('هدف البحث' in t and len(t)<25)):
         close_itemize()
         out.append(THEORY)   # الإطار النظري الكامل (كان ناقصًا) في نهاية الفصل الأول
-        out.append(r'\chapter{الإشكالية وإجراءات الدراسة المنهجية}')
+        out.append(r'\chapter*{الفصل الثاني: الإشكالية وإجراءات الدراسة المنهجية}')
+        out.append(r'\addcontentsline{toc}{chapter}{الفصل الثاني: الإشكالية وإجراءات الدراسة المنهجية}')
         out.append(r'\section*{تمهيد}')
         out.append(r"""تتناول الدراسة الحالية العلاقة بين إدراك المراهق لأسلوب المعاملة الوالدية
 المتسلط وتقديره لذاته، انطلاقًا من أنّ أثر الممارسات الوالدية لا يتحدّد بوجودها في ذاتها، وإنما
 بالكيفية التي يدركها بها الأبناء ويفسّرونها. وقد اتّجهت الدراسة إلى المقاربة الكيفية باعتبارها
 الأقدر على استكشاف هذه الخبرة، والكشف عن المعاني التي يبنيها المراهق انطلاقًا من علاقته بوالديه،
 خاصّة في ظلّ ندرة الدراسات الكيفية في هذا الموضوع بالبيئة المغربية.""")
+        out.append(ISHKAL)   # طرح الإشكالية + أهمية البحث (كان ناقصًا)
         out.append(r'\section{هدف البحث}')
         emitted_ch2=True
         i+=1; continue
@@ -463,7 +468,8 @@ while i<n:
     # --- chapters explicitly present ---
     if t.startswith('الفصل الثالث'):
         close_itemize()
-        out.append(r'\chapter{عرض النتائج وتحليلها}')
+        out.append(r'\chapter*{الفصل الثالث: عرض النتائج وتحليلها}')
+        out.append(r'\addcontentsline{toc}{chapter}{الفصل الثالث: عرض النتائج وتحليلها}')
         i+=1; continue
     if t.startswith('الخاتمة العامة'):
         close_itemize()
@@ -472,8 +478,8 @@ while i<n:
         i+=1; continue
     if t.startswith('الملاحق') and len(t)<12:
         close_itemize()
-        out.append(r'\appendix')
-        out.append(r'\chapter{الملاحق}')
+        out.append(r'\chapter*{الملاحق}')
+        out.append(r'\addcontentsline{toc}{chapter}{الملاحق}')
         in_appendix=True
         i+=1; continue
     if t.startswith('قائمة المراجع'):
