@@ -228,7 +228,7 @@ for t in doc.tables:
 #            already-styled paragraphs are not clobbered) ----------
 delete_between(ch4_h,khat_h)
 for idx,(kind,text) in enumerate(NEW_CH4):
-    if idx==0 and kind=='h1': text='الباب الرابع: '+text
+    if idx==0 and kind=='h1': text='الفصل الرابع: '+text
     build_before(khat_h,kind,text)
 delete_between(intro_h,ch1_h)
 mqddima=build_before(ch1_h,'h1','المقدمة العامة')
@@ -243,7 +243,7 @@ _meth=find(lambda t:t.strip().startswith('4.') and 'هدف' in t) \
       or find(lambda t:t.strip().startswith('هدف البحث'))
 if _meth is not None:
     for kind,text in NEW_THEORY: build_before(_meth,kind,text)   # نهاية الفصل الأول
-    build_before(_meth,'h1','الباب الثاني: الإطار المنهجي للدراسة')
+    build_before(_meth,'h1','الفصل الثاني: الإطار المنهجي للدراسة')
 
 # ---------- auto فهرس المحتويات + لائحة الجداول before the introduction ----------
 def field_para(ref,instr):
@@ -325,8 +325,7 @@ doc.paragraphs[mi].paragraph_format.page_break_before=False
 # ---------- fix faculty text inside text boxes (raw w:t nodes) ----------
 _repl=[('كلية الآداب والعلوم الإنسانية','كلية العلوم'),
        ('الآداب والعلوم الإنسانية','العلوم'),
-       ('مرتيل','تطوان'),
-       ('الفصول','الأبواب'),('فصول','أبواب'),('الفصل','الباب')]  # الأقسام الكبرى = الباب
+       ('مرتيل','تطوان')]
 _nfix=0
 for wt in doc.element.iter(qn('w:t')):
     if wt.text:
@@ -334,14 +333,6 @@ for wt in doc.element.iter(qn('w:t')):
         for a,b in _repl: new=new.replace(a,b)
         if new!=wt.text: wt.text=new; _nfix+=1
 print('faculty w:t nodes fixed:',_nfix)
-# paragraph-level fallback for headings where الفصل is split across runs
-for p in doc.paragraphs:
-    full=''.join(r.text for r in p.runs)
-    if 'الفصل' in full and len(full)<80:
-        full=full.replace('الفصول','الأبواب').replace('فصول','أبواب').replace('الفصل','الباب')
-        if p.runs:
-            p.runs[0].text=full
-            for r in p.runs[1:]: r.text=''
 
 # update TOC-type fields on open (if any exist)
 try:

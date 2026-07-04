@@ -62,8 +62,7 @@ def esc(s):
     return s
 
 def babify(s):
-    return (s.replace('الفصول','الأبواب').replace('فصول','أبواب')
-             .replace('الفصل','الباب').replace('فصلين','بابين'))
+    return s   # (معطّلة: الأقسام الكبرى = الفصل)
 
 # ----------------------------------------------------------------------
 # 3. Table emitter (adaptive column specs, RTL-safe, width-fitting)
@@ -126,7 +125,7 @@ def heading_level(t):
     if len(tt)<85 and any(tt.startswith(m) for m in MEHWAR): return ('sec', tt)
     if tt.startswith('الملحق'): return ('sec', tt)
     if len(tt)<70 and any(tt.startswith(q) for q in SUBQ): return ('sub', tt)
-    if tt in ('تمهيد','تمهيد الباب'): return ('secstar','تمهيد')
+    if tt in ('تمهيد','تمهيد الفصل'): return ('secstar','تمهيد')
     if tt in ('الأسئلة الفرعية','السؤال المركزي'): return ('sub', tt)
     if 'التعريف الإجرائي' in tt and len(tt)<45: return ('sub', tt)
     if tt.startswith('مفهوم الإدراك'): return ('sub', tt)
@@ -136,7 +135,7 @@ def heading_level(t):
 
 RUNIN=('الجواب:','السؤال:','المؤشر المستخلص:','المؤشر المستهدف:','البعد المرتبط:',
        'السند النظري:','الأسئلة:','وظيفته:','الملاحظة التحليلية','الاتجاه العام',
-       'الحالات الخاصة','القراءة التحليلية','خلاصة الباب','ملاحظة منهجية','ملاحظة:',
+       'الحالات الخاصة','القراءة التحليلية','خلاصة الفصل','ملاحظة منهجية','ملاحظة:',
        'الكلمات المفتاحية:')
 
 # ----------------------------------------------------------------------
@@ -185,7 +184,7 @@ PREAMBLE=r"""% =================================================================
 \renewcommand{\contentsname}{فهرس المحتويات}
 \renewcommand{\listtablename}{لائحة الجداول}
 \renewcommand{\listfigurename}{لائحة الأشكال}
-\renewcommand{\chaptername}{الباب}
+\renewcommand{\chaptername}{الفصل}
 \renewcommand{\tablename}{جدول}
 \renewcommand{\figurename}{شكل}
 % أرقام الأقسام معطّلة (العناوين مرقّمة أصلاً بكلمات: أولاً/البعد الأول/السؤال الأول...)
@@ -381,11 +380,11 @@ while i<n:
         out.append(emit_table(val, pending_caption))
         pending_caption=None
         i+=1; continue
-    t=babify(val.strip())
+    t=val.strip()
 
     # --- skip old general introduction (68-86) until Chapter 1 ---
     if mode=='skip_intro':
-        if t.startswith('الباب الاول') or t.startswith('الباب الأول'):
+        if t.startswith('الفصل الاول') or t.startswith('الفصل الأول'):
             mode='normal'
             close_itemize()
             out.append(NEW_INTRO)
@@ -394,7 +393,7 @@ while i<n:
         i+=1; continue
 
     # --- old Chapter 4 -> replace with rebuilt version ---
-    if t.startswith('الباب الرابع'):
+    if t.startswith('الفصل الرابع'):
         close_itemize()
         out.append(NEW_CH4)
         emitted_ch4=True
@@ -462,7 +461,7 @@ while i<n:
         i+=1; continue
 
     # --- chapters explicitly present ---
-    if t.startswith('الباب الثالث'):
+    if t.startswith('الفصل الثالث'):
         close_itemize()
         out.append(r'\chapter{عرض النتائج وتحليلها}')
         i+=1; continue
