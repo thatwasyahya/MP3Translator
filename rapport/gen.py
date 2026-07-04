@@ -93,12 +93,10 @@ def emit_table(rows, caption):
     inner.append(r'\bottomrule')
     inner.append(r'\end{tabular}')
     tab='\n'.join(inner)
-    if wide:
-        out.append(r'\resizebox{\textwidth}{!}{%')
-        out.append(tab)
-        out.append(r'}')
-    else:
-        out.append(tab)
+    # adjustbox max width: shrink ONLY if wider than the page, never enlarge
+    out.append(r'\begin{adjustbox}{max width=\textwidth}')
+    out.append(tab)
+    out.append(r'\end{adjustbox}')
     out.append(r'\end{table}')
     return '\n'.join(out)
 
@@ -161,6 +159,12 @@ PREAMBLE=r"""% =================================================================
 \usepackage{amssymb}
 \usepackage{float}
 \usepackage{enumitem}
+\usepackage{adjustbox}
+\usepackage{chngcntr}
+\usepackage{tikz}
+\definecolor{coverblue}{RGB}{6,49,186}
+\definecolor{titlecolor}{RGB}{54,95,145}
+\definecolor{borderblue}{RGB}{84,141,212}
 \usepackage{needspace}
 \usepackage{etoolbox}
 % اقفز إلى صفحة جديدة إذا بدأ عنوان قسم وقد تجاوزنا ثُلثَي الصفحة (بقي أقلّ من الثلث)
@@ -178,7 +182,8 @@ PREAMBLE=r"""% =================================================================
 \renewcommand{\chaptername}{الفصل}
 \renewcommand{\tablename}{جدول}
 \renewcommand{\figurename}{شكل}
-\setcounter{tocdepth}{2}\setcounter{secnumdepth}{2}
+% أرقام الأقسام معطّلة (العناوين مرقّمة أصلاً بكلمات: أولاً/البعد الأول/السؤال الأول...)
+\setcounter{tocdepth}{2}\setcounter{secnumdepth}{0}
 % اللغة والاتّجاه (polyglossia + bidi مع محرّك XeLaTeX)
 \usepackage{polyglossia}
 \setmainlanguage[numerals=maghrib]{arabic}
@@ -189,26 +194,38 @@ PREAMBLE=r"""% =================================================================
   {\newfontfamily\arabicfont[Script=Arabic]{FreeSerif}}
 \newfontfamily\englishfont{Latin Modern Roman}
 \newcommand{\en}[1]{\textenglish{#1}}
+% ترقيم الجداول متسلسل 1..N (يطابق الإحالات في المتن)
+\counterwithout{table}{chapter}
+\renewcommand{\thetable}{\arabic{table}}
 \begin{document}
 \sloppy
 """
 
-COVER=r"""% ------------------------------ الغلاف (كما في الأصل) ---------------
+COVER=r"""% ------------------------------ الغلاف (مطابق للأصل) ---------------
 \thispagestyle{empty}
 \begin{titlepage}
+\begin{tikzpicture}[remember picture,overlay]
+  \draw[line width=2.2pt,color=borderblue]
+     ([shift={(1.1cm,-1.1cm)}]current page.north west) rectangle
+     ([shift={(-1.1cm,1.1cm)}]current page.south east);
+  \draw[line width=0.6pt,color=borderblue]
+     ([shift={(1.28cm,-1.28cm)}]current page.north west) rectangle
+     ([shift={(-1.28cm,1.28cm)}]current page.south east);
+\end{tikzpicture}
 \centering
-{\large\bfseries شعبة علم النفس الإكلينيكي}\\[10pt]
-{\large جامعة عبد المالك السعدي}\\[3pt]
-{\large كلية العلوم بتطوان}\\[36pt]
-{\large بحث لنيل شهادة الإجازة في علم النفس الإكلينيكي}\\[16pt]
-{\large\bfseries بعنوان:}\\[18pt]
-{\LARGE\bfseries إدراك أسلوب المعاملة الوالدية المتسلط\\[10pt]
-وعلاقته بتقدير الذات لدى المراهقين (15--17 سنة)}\\[10pt]
-{\Large دراسة كيفية}\\[46pt]
-{\large إعداد الطالبة: لطيفة أديب}\\[6pt]
-{\large رقم التسجيل: 23068742}\\[16pt]
-{\large تحت إشراف الأستاذ: د. بدر الدين الزيدي}\\[26pt]
-{\large المستوى: السنة الثالثة من الإجازة -- علم النفس الإكلينيكي}\\[36pt]
+\vspace*{0.4cm}
+{\LARGE\bfseries\color{coverblue} شعبة علم النفس الإكلينيكي}\\[16pt]
+{\LARGE\bfseries\color{coverblue} جامعة عبد المالك السعدي}\\[6pt]
+{\LARGE\bfseries\color{coverblue} كلية العلوم بتطوان}\\[46pt]
+{\Large بحث لنيل شهادة الإجازة في علم النفس الإكلينيكي}\\[16pt]
+{\Large\bfseries بعنوان:}\\[26pt]
+{\LARGE\bfseries\color{titlecolor} إدراك أسلوب المعاملة الوالدية المتسلط وعلاقته\\[8pt]
+بتقدير الذات لدى المراهقين (15--17 سنة)}\\[10pt]
+{\Large\bfseries\color{titlecolor} دراسة كيفية}\\[50pt]
+{\large\bfseries\color{titlecolor} تحت إشراف الأستاذ: د. بدر الدين الزيدي}\\[30pt]
+{\large\bfseries إعداد الطالبة: لطيفة أديب}\\[6pt]
+{\large رقم التسجيل: 23068742}\\[24pt]
+{\large المستوى: السنة الثالثة من الإجازة -- علم النفس الإكلينيكي}\\[40pt]
 {\large السنة الجامعية: 2025 -- 2026}
 \end{titlepage}
 \pagenumbering{roman}

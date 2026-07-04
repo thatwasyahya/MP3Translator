@@ -21,6 +21,12 @@
 \usepackage{amssymb}
 \usepackage{float}
 \usepackage{enumitem}
+\usepackage{adjustbox}
+\usepackage{chngcntr}
+\usepackage{tikz}
+\definecolor{coverblue}{RGB}{6,49,186}
+\definecolor{titlecolor}{RGB}{54,95,145}
+\definecolor{borderblue}{RGB}{84,141,212}
 \usepackage{needspace}
 \usepackage{etoolbox}
 % اقفز إلى صفحة جديدة إذا بدأ عنوان قسم وقد تجاوزنا ثُلثَي الصفحة (بقي أقلّ من الثلث)
@@ -38,7 +44,8 @@
 \renewcommand{\chaptername}{الفصل}
 \renewcommand{\tablename}{جدول}
 \renewcommand{\figurename}{شكل}
-\setcounter{tocdepth}{2}\setcounter{secnumdepth}{2}
+% أرقام الأقسام معطّلة (العناوين مرقّمة أصلاً بكلمات: أولاً/البعد الأول/السؤال الأول...)
+\setcounter{tocdepth}{2}\setcounter{secnumdepth}{0}
 % اللغة والاتّجاه (polyglossia + bidi مع محرّك XeLaTeX)
 \usepackage{polyglossia}
 \setmainlanguage[numerals=maghrib]{arabic}
@@ -49,25 +56,37 @@
   {\newfontfamily\arabicfont[Script=Arabic]{FreeSerif}}
 \newfontfamily\englishfont{Latin Modern Roman}
 \newcommand{\en}[1]{\textenglish{#1}}
+% ترقيم الجداول متسلسل 1..N (يطابق الإحالات في المتن)
+\counterwithout{table}{chapter}
+\renewcommand{\thetable}{\arabic{table}}
 \begin{document}
 \sloppy
 
-% ------------------------------ الغلاف (كما في الأصل) ---------------
+% ------------------------------ الغلاف (مطابق للأصل) ---------------
 \thispagestyle{empty}
 \begin{titlepage}
+\begin{tikzpicture}[remember picture,overlay]
+  \draw[line width=2.2pt,color=borderblue]
+     ([shift={(1.1cm,-1.1cm)}]current page.north west) rectangle
+     ([shift={(-1.1cm,1.1cm)}]current page.south east);
+  \draw[line width=0.6pt,color=borderblue]
+     ([shift={(1.28cm,-1.28cm)}]current page.north west) rectangle
+     ([shift={(-1.28cm,1.28cm)}]current page.south east);
+\end{tikzpicture}
 \centering
-{\large\bfseries شعبة علم النفس الإكلينيكي}\\[10pt]
-{\large جامعة عبد المالك السعدي}\\[3pt]
-{\large كلية العلوم بتطوان}\\[36pt]
-{\large بحث لنيل شهادة الإجازة في علم النفس الإكلينيكي}\\[16pt]
-{\large\bfseries بعنوان:}\\[18pt]
-{\LARGE\bfseries إدراك أسلوب المعاملة الوالدية المتسلط\\[10pt]
-وعلاقته بتقدير الذات لدى المراهقين (15--17 سنة)}\\[10pt]
-{\Large دراسة كيفية}\\[46pt]
-{\large إعداد الطالبة: لطيفة أديب}\\[6pt]
-{\large رقم التسجيل: 23068742}\\[16pt]
-{\large تحت إشراف الأستاذ: د. بدر الدين الزيدي}\\[26pt]
-{\large المستوى: السنة الثالثة من الإجازة -- علم النفس الإكلينيكي}\\[36pt]
+\vspace*{0.4cm}
+{\LARGE\bfseries\color{coverblue} شعبة علم النفس الإكلينيكي}\\[16pt]
+{\LARGE\bfseries\color{coverblue} جامعة عبد المالك السعدي}\\[6pt]
+{\LARGE\bfseries\color{coverblue} كلية العلوم بتطوان}\\[46pt]
+{\Large بحث لنيل شهادة الإجازة في علم النفس الإكلينيكي}\\[16pt]
+{\Large\bfseries بعنوان:}\\[26pt]
+{\LARGE\bfseries\color{titlecolor} إدراك أسلوب المعاملة الوالدية المتسلط وعلاقته\\[8pt]
+بتقدير الذات لدى المراهقين (15--17 سنة)}\\[10pt]
+{\Large\bfseries\color{titlecolor} دراسة كيفية}\\[50pt]
+{\large\bfseries\color{titlecolor} تحت إشراف الأستاذ: د. بدر الدين الزيدي}\\[30pt]
+{\large\bfseries إعداد الطالبة: لطيفة أديب}\\[6pt]
+{\large رقم التسجيل: 23068742}\\[24pt]
+{\large المستوى: السنة الثالثة من الإجازة -- علم النفس الإكلينيكي}\\[40pt]
 {\large السنة الجامعية: 2025 -- 2026}
 \end{titlepage}
 \pagenumbering{roman}
@@ -346,7 +365,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c}
 \toprule
 \textbf{الرمز} & \textbf{الجنس} & \textbf{العمر} & \textbf{المستوى الدراسي} \\
@@ -364,7 +383,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 م11 & أنثى & 17 & الأولى باكالوريا \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 \subsection{الاعتبارات الأخلاقية}
 نظراً لأن المشاركين قاصرون، تم الحرص على: الحصول على موافقة مزدوجة (موافقة ولي الأمر وموافقة المراهق نفسه)؛ وضمان السرية التامة وعدم الكشف عن أي معلومة تُعرّف هوية المشارك أو أسرته، باستخدام الرموز الموضحة في الجدول أعلاه عند تحليل المعطيات وعرض النتائج؛ والحصول على إذن رسمي من مدير الثانوية قبل الشروع في الميدان.
@@ -400,6 +419,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{3.8cm} p{9.6cm}}
 \toprule
 \textbf{البعد} & \textbf{المؤشر المستهدف} \\
@@ -412,6 +432,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 كبت الاستقلالية والرأي & مدى مشاركة المراهق في اتخاذ القرارات، ورد فعل الوالدين عند الاختلاف معه. \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \section{المحور الثاني: تقدير الذات من خلال إدراك التسلط  (5 أبعاد مزدوجة)}
 \begin{table}[H]
@@ -419,6 +440,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{6cm} p{4cm} p{4cm}}
 \toprule
 \textbf{البعد} & \textbf{المؤشر المستهدف} & \textbf{البعد المرجعي} \\
@@ -430,6 +452,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 تقدير الذات الجسمي & الرضا عن المظهر الجسدي، صورة الجسد & البرود العاطفي وقلة التقبل، والعقاب عند وجود تعليقات مرتبطة بالمظهر \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 انطلاقًا من أهداف الدراسة والإطار النظري، تم بناء دليل المقابلة شبه الموجهة اعتمادًا على محورين رئيسيين:
 
@@ -548,7 +571,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c c}
 \toprule
 \textbf{الرمز} & \textbf{الجنس} & \textbf{العمر} & \textbf{المستوى الدراسي} & \textbf{ترتيب المشارك} \\
@@ -566,7 +589,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 م11 & أنثى & 17 & الأولى باكالوريا & 11 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 \begin{table}[H]
 \centering
@@ -574,7 +597,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c}
 \toprule
 \textbf{الجنس} & \textbf{العدد} & \textbf{النسبة \%} & \textbf{الفئة العمرية السائدة} \\
@@ -584,7 +607,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 المجموع & 11 & 100\% & -- \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 يتضح من الجدول (2) أن نسبة الإناث بلغت 54.5\% (6 مشاركات) في مقابل 45.5\% للذكور (5 مشاركين)، مما يعكس تنوعاً نسبياً في توزيع العينة جنسياً.
 
@@ -594,7 +617,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c}
 \toprule
 \textbf{المستوى الدراسي} & \textbf{العدد} & \textbf{النسبة \%} & \textbf{الجنس} \\
@@ -604,7 +627,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 المجموع & 11 & 100\% & -- \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 يُبيّن الجدول (3) أن 54.5\% من المشاركين ينتمون إلى مستوى الجذع المشترك، فيما يمثّل مستوى الأولى باكالوريا 45.5\%. ويُلاحَظ أن جميع المشاركين ينتمون إلى المرحلة المحددة في الإطار المنهجي (15-17 سنة).
 
@@ -622,7 +645,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \scriptsize
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
 \textbf{المؤشر} & \textbf{م1} & \textbf{م2} & \textbf{م3} & \textbf{م4} & \textbf{م5} & \textbf{م6} & \textbf{م7} & \textbf{م8} & \textbf{م9} & \textbf{م10} & \textbf{م11} \\
@@ -637,7 +660,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 التكرار (عدد المشاركين) & 2 & 2 & 2 & 2 & 1 & 1 & 0 & 3 & 2 & 2 & 1 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 \begin{table}[H]
 \centering
@@ -645,6 +668,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{6cm} p{4cm} p{4cm}}
 \toprule
 \textbf{المؤشر} & \textbf{عدد المشاركين} & \textbf{النسبة المئوية} \\
@@ -658,6 +682,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 كبت المشاعر / صعوبة التعبير عن الذات & 1 & 9\% \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \subsection{السؤال الثاني: ماذا سيتغير لو مُنحت مساحة أكبر للتعبير؟}
 \begin{table}[H]
@@ -666,7 +691,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \scriptsize
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
 \textbf{المؤشر} & \textbf{م1} & \textbf{م2} & \textbf{م3} & \textbf{م4} & \textbf{م5} & \textbf{م6} & \textbf{م7} & \textbf{م8} & \textbf{م9} & \textbf{م10} & \textbf{م11} \\
@@ -680,7 +705,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 التكرار (عدد المشاركين) & 2 & 2 & 1 & 0 & 2 & 2 & 0 & 0 & 0 & 0 & 2 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 \begin{table}[H]
 \centering
@@ -688,6 +713,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{6cm} p{4cm} p{4cm}}
 \toprule
 \textbf{المؤشر} & \textbf{عدد المشاركين} & \textbf{النسبة المئوية} \\
@@ -700,6 +726,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 ثقة شخصية متوسطة إلى جيدة & 1 & 9\% \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \noindent\textbf{الاتجاه العام للبعد الشخصي:} تكشف البيانات أن الغالبية العظمى من المشاركين (9 من 11) يُعانون من مستوى متوسط إلى مرتفع من الأثر السلبي على تقدير ذاتهم الشخصي، ويتجلى ذلك بوضوح في ظاهرة الانسحاب من التعبير عن الرأي وضعف الثقة في القرارات الشخصية. في المقابل، أظهر المشاركان م5 وم11 قدرة على التكيّف تميّزهما عن باقي الحالات.\par
 \noindent\textbf{الحالات الخاصة:} يمثّل م5 وم11 حالتَي استثناء إيجابي، إذ طوّرا آليات تكيّف مع غياب المشاركة في القرار. في المقابل، تُعدّ م9 الحالة الأكثر تأثراً إذ أضافت بُعد كبت المشاعر وصعوبة التعبير عن الذات.\par
@@ -713,7 +740,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \scriptsize
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
 \textbf{المؤشر} & \textbf{م1} & \textbf{م2} & \textbf{م3} & \textbf{م4} & \textbf{م5} & \textbf{م6} & \textbf{م7} & \textbf{م8} & \textbf{م9} & \textbf{م10} & \textbf{م11} \\
@@ -727,7 +754,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 التكرار (عدد المشاركين) & 1 & 2 & 2 & 2 & 0 & 2 & 1 & 2 & 0 & 2 & 0 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 \begin{table}[H]
 \centering
@@ -735,6 +762,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{6cm} p{4cm} p{4cm}}
 \toprule
 \textbf{المؤشر} & \textbf{عدد المشاركين} & \textbf{النسبة المئوية} \\
@@ -747,6 +775,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 الشعور بالتقبل المشروط & 2 & 18\% \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \subsection{السؤال الثاني: أثر القرب أو البعد العاطفي على مكانتك داخل الأسرة}
 \begin{table}[H]
@@ -755,7 +784,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \scriptsize
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
 \textbf{المؤشر} & \textbf{م1} & \textbf{م2} & \textbf{م3} & \textbf{م4} & \textbf{م5} & \textbf{م6} & \textbf{م7} & \textbf{م8} & \textbf{م9} & \textbf{م10} & \textbf{م11} \\
@@ -769,7 +798,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 التكرار (عدد المشاركين) & 1 & 2 & 1 & 0 & 2 & 1 & 0 & 1 & 2 & 1 & 1 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 \begin{table}[H]
 \centering
@@ -777,6 +806,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{6cm} p{4cm} p{4cm}}
 \toprule
 \textbf{المؤشر} & \textbf{عدد المشاركين} & \textbf{النسبة المئوية} \\
@@ -789,6 +819,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 إدراك التقبل رغم الصرامة & 2 & 18\% \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \noindent\textbf{الاتجاه العام للبعد الأسري:} يُعدّ البعد الأسري الأكثر تأثراً عبر جميع الحالات، إذ سجّل 9 من 11 مشاركاً مستوى مرتفعاً من التأثر. ويبرز ارتباط الشعور بالقيمة الذاتية بالتقبل العاطفي والرضا الوالدي كمؤشر مشترك في أغلب الحالات. كما يظهر أثر الصراع الأسري عاملاً إضافياً يُضخّم هذا التأثر لدى م2 وم9.\par
 \noindent\textbf{الحالات الخاصة:} سجّلت م9 المستوى الأعلى ('مرتفع جداً') نتيجة تراكم الصراع الأسري المتكرر. في المقابل أظهر م5 وم11 الأثر الأخف بفضل إدراكهما لوجود تقبل أسري رغم الصرامة.\par
@@ -802,7 +833,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \scriptsize
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
 \textbf{المؤشر} & \textbf{م1} & \textbf{م2} & \textbf{م3} & \textbf{م4} & \textbf{م5} & \textbf{م6} & \textbf{م7} & \textbf{م8} & \textbf{م9} & \textbf{م10} & \textbf{م11} \\
@@ -816,7 +847,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 التكرار (عدد المشاركين) & 1 & 2 & 2 & 0 & 1 & 3 & 1 & 0 & 1 & 2 & 1 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 \begin{table}[H]
 \centering
@@ -824,6 +855,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{6cm} p{4cm} p{4cm}}
 \toprule
 \textbf{المؤشر} & \textbf{عدد المشاركين} & \textbf{النسبة المئوية} \\
@@ -836,6 +868,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 حساسية تجاه التقييم الاجتماعي & 2 & 18\% \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \subsection{السؤال الثاني: دور متابعة الوالدين لعلاقاتك في تعاملك مع الآخرين}
 \begin{table}[H]
@@ -844,7 +877,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \scriptsize
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
 \textbf{المؤشر} & \textbf{م1} & \textbf{م2} & \textbf{م3} & \textbf{م4} & \textbf{م5} & \textbf{م6} & \textbf{م7} & \textbf{م8} & \textbf{م9} & \textbf{م10} & \textbf{م11} \\
@@ -857,7 +890,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 التكرار (عدد المشاركين) & 2 & 2 & 2 & 2 & 2 & 0 & 0 & 0 & 1 & 0 & 1 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 \begin{table}[H]
 \centering
@@ -865,6 +898,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{6cm} p{4cm} p{4cm}}
 \toprule
 \textbf{المؤشر} & \textbf{عدد المشاركين} & \textbf{النسبة المئوية} \\
@@ -876,6 +910,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 الاعتماد على الأصدقاء كمصدر دعم نفسي & 1 & 9\% \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \noindent\textbf{الاتجاه العام للبعد الاجتماعي:} يتسم تأثير التسلط الوالدي على البعد الاجتماعي بالتوسط العام، حيث تتمحور المؤشرات الأكثر تكراراً حول الحذر الاجتماعي (5 مشاركين) وتأثير الرقابة على بناء العلاقات (4 مشاركين). ويُلاحَظ أن العلاقات الاجتماعية تلعب دوراً تعويضياً لدى بعض المشاركين.\par
 \noindent\textbf{الحالات الخاصة:} يتميّز م3 بكونه الحالة الأكثر تأثراً اجتماعياً (مرتفع)، إذ أفضت الرقابة المكثفة إلى تجنبه الخروج أصلاً. في المقابل، أظهرت م7 وم9 علاقات اجتماعية إيجابية ذات وظيفة تعويضية عن الضغط الأسري.\par
@@ -889,7 +924,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \scriptsize
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
 \textbf{المؤشر} & \textbf{م1} & \textbf{م2} & \textbf{م3} & \textbf{م4} & \textbf{م5} & \textbf{م6} & \textbf{م7} & \textbf{م8} & \textbf{م9} & \textbf{م10} & \textbf{م11} \\
@@ -902,7 +937,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 التكرار (عدد المشاركين) & 2 & 2 & 2 & 3 & 2 & 0 & 1 & 1 & 0 & 0 & 1 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 \begin{table}[H]
 \centering
@@ -910,6 +945,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{6cm} p{4cm} p{4cm}}
 \toprule
 \textbf{المؤشر} & \textbf{عدد المشاركين} & \textbf{النسبة المئوية} \\
@@ -921,6 +957,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 ربط القيمة الذاتية بالأداء الدراسي & 1 & 9\% \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \subsection{السؤال الثاني: كيف تنظر إلى نفسك حين تتعثر دراسياً؟}
 \begin{table}[H]
@@ -929,7 +966,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \scriptsize
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
 \textbf{المؤشر} & \textbf{م1} & \textbf{م2} & \textbf{م3} & \textbf{م4} & \textbf{م5} & \textbf{م6} & \textbf{م7} & \textbf{م8} & \textbf{م9} & \textbf{م10} & \textbf{م11} \\
@@ -943,7 +980,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 التكرار (عدد المشاركين) & 2 & 2 & 1 & 0 & 1 & 0 & 2 & 1 & 1 & 2 & 2 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 \begin{table}[H]
 \centering
@@ -951,6 +988,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{6cm} p{4cm} p{4cm}}
 \toprule
 \textbf{المؤشر} & \textbf{عدد المشاركين} & \textbf{النسبة المئوية} \\
@@ -963,6 +1001,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 مرونة في مواجهة التعثر الدراسي & 2 & 18\% \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \noindent\textbf{الاتجاه العام للبعد الأكاديمي:} يُعدّ البعد الأكاديمي الأقل تأثراً بالأسلوب الوالدي المتسلط، إذ حافظ أغلب المشاركين (8 من 11) على شعور جيد بالكفاءة الدراسية رغم الضغط. ويبدو أن الصرامة الوالدية في هذا المجال تؤدي وظيفة تحفيزية أكثر منها تدميرية على الصعيد الأكاديمي.\par
 \noindent\textbf{الحالات الخاصة:} تمثّل م8 استثناءً بارزاً إذ ربطت قيمتها الذاتية بالنجاح الدراسي بشكل مرتفع، مما جعل البعد الأكاديمي من أكثر أبعادها تأثراً. في المقابل، حوّل م5 وم11 الضغط الأكاديمي إلى دافع إيجابي.\par
@@ -976,7 +1015,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \scriptsize
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
 \textbf{المؤشر} & \textbf{م1} & \textbf{م2} & \textbf{م3} & \textbf{م4} & \textbf{م5} & \textbf{م6} & \textbf{م7} & \textbf{م8} & \textbf{م9} & \textbf{م10} & \textbf{م11} \\
@@ -989,7 +1028,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 التكرار (عدد المشاركين) & 1 & 1 & 1 & 1 & 2 & 2 & 1 & 2 & 1 & 2 & 1 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 \begin{table}[H]
 \centering
@@ -997,6 +1036,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{6cm} p{4cm} p{4cm}}
 \toprule
 \textbf{المؤشر} & \textbf{عدد المشاركين} & \textbf{النسبة المئوية} \\
@@ -1008,6 +1048,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 رضا جسمي جيد & 1 & 9\% \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \subsection{السؤال الثاني: دور كلام الوالدين في شعورك تجاه مظهرك}
 \begin{table}[H]
@@ -1016,7 +1057,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \scriptsize
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
 \textbf{المؤشر} & \textbf{م1} & \textbf{م2} & \textbf{م3} & \textbf{م4} & \textbf{م5} & \textbf{م6} & \textbf{م7} & \textbf{م8} & \textbf{م9} & \textbf{م10} & \textbf{م11} \\
@@ -1028,7 +1069,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 التكرار (عدد المشاركين) & 1 & 1 & 1 & 2 & 1 & 1 & 1 & 0 & 2 & 2 & 1 \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 \begin{table}[H]
 \centering
@@ -1036,6 +1077,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{6cm} p{4cm} p{4cm}}
 \toprule
 \textbf{المؤشر} & \textbf{عدد المشاركين} & \textbf{النسبة المئوية} \\
@@ -1046,6 +1088,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 تقبّل نسبي للذات / القدرة على التكيف & 1 & 9\% \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \noindent\textbf{الاتجاه العام للبعد الجسمي:} يحتل البعد الجسمي المرتبة الثانية في انخفاض التأثر بعد البعد الأكاديمي، إذ يتسم أغلب المشاركين بتقبّل جسدي متوسط. وتبرز الفجوة بين الجنسين، حيث تُظهر الإناث حساسية أعلى تجاه التعليقات على المظهر مقارنة بالذكور.\par
 \noindent\textbf{الحالات الخاصة:} تُعدّ م10 الأكثر تأثراً في هذا البعد (متوسط إلى مرتفع) نتيجة تراكم الحساسية للتعليقات والميل للمقارنة. بينما تمثّل الحالات الذكورية (م1، م2، م3، م4، م5) النموذج الأدنى تأثراً (ضعيف).\par
@@ -1058,7 +1101,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \scriptsize
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{l c c c c c c c c c c c}
 \toprule
 \textbf{البعد المشارك} & \textbf{م1} & \textbf{م2} & \textbf{م3} & \textbf{م4} & \textbf{م5} & \textbf{م6} & \textbf{م7} & \textbf{م8} & \textbf{م9} & \textbf{م10} & \textbf{م11} \\
@@ -1070,7 +1113,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 الجسمي & ضعيف & ضعيف & ضعيف & ضعيف إلى متوسط & ضعيف & متوسط & متوسط & متوسط & متوسط & متوسط إلى مرتفع & ضعيف \\
 \bottomrule
 \end{tabular}
-}
+\end{adjustbox}
 \end{table}
 \noindent\textbf{ملاحظة:}  أحمر = مرتفع جداً  |   أصفر = مرتفع  |   أخضر = متوسط  |   أزرق = ضعيف\par
 \noindent\textbf{القراءة التحليلية للجدول التركيبي}\par
@@ -1312,6 +1355,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{3.8cm} p{9.6cm}}
 \toprule
 \textbf{البعد} & \textbf{المؤشرات} \\
@@ -1324,6 +1368,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 كبت الاستقلالية والرأي & منع اتخاذ القرار، عدم احترام الرأي، الحد من الاستقلالية \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \subsection*{الملحق (ب)}
 \begin{table}[H]
@@ -1332,6 +1377,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{3.8cm} p{9.6cm}}
 \toprule
 \textbf{البعد} & \textbf{المؤشرات} \\
@@ -1343,6 +1389,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 الجسمي & تقبل المظهر، الرضا عن الجسد، الحساسية تجاه التعليقات \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \subsection*{الملحق (ج)}
 \begin{table}[H]
@@ -1351,6 +1398,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{6cm} p{4cm} p{4cm}}
 \toprule
 \textbf{المفهوم} & \textbf{البعد} & \textbf{السؤال/الأسئلة} \\
@@ -1368,6 +1416,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
  & الجسمي & السؤال الخامس عشر والسادس عشر \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \subsection*{الملحق (د)}
 \begin{table}[H]
@@ -1376,6 +1425,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{3.8cm} p{9.6cm}}
 \toprule
 \textbf{المرحلة} & \textbf{الإجراء} \\
@@ -1389,6 +1439,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 7 & بناء التفسير في ضوء الإطار النظري \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 شبكة المقابلة نصف الموجهة
 
@@ -1722,6 +1773,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 \small
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{p{3.8cm} p{9.6cm}}
 \toprule
 \textbf{بعد تقدير الذات} & \textbf{مستوى التأثر} \\
@@ -1733,6 +1785,7 @@ Adolescents (15--17 ans) ; Étude qualitative ; Analyse de contenu dirigée.
 الجسمي & ضعيف \\
 \bottomrule
 \end{tabular}
+\end{adjustbox}
 \end{table}
 \noindent\textbf{الملاحظة التحليلية}\par
 أظهر المشارك م1 إدراكاً واضحاً لتأثير غياب الحوار وكبت الاستقلالية على نظرته لنفسه، كما برزت لديه إشارة مهمة إلى التناقض بين مطالبة الوالدين له بتحمل المسؤولية وبين عدم إشراكه في القرارات المهمة. في المقابل ظل تقديره لذاته الأكاديمية مستقراً نسبياً رغم الصرامة الوالدية، مما يدل على أن تأثير التسلط لم يكن متساوياً على جميع أبعاد تقدير الذات.
